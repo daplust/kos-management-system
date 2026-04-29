@@ -12,7 +12,7 @@ import { Inventaris } from './pages/Inventaris';
 
 function App() {
   return (
-    <div className="min-h-screen bg-beige-100 text-gray-800 transtition-opacity duration-500 pt-2">
+    <div className="flex min-h-screen bg-muted/30 transtition-opacity duration-500">
           <Routes>
             <Route path="/signin" element={<SignIn />} />
             <Route element={<Layout />}>

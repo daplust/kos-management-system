@@ -1,13 +1,15 @@
-import { LayoutDashboard, DoorOpen, FileText, History, Wallet, TrendingUp, Package } from 'lucide-react';
+import { LayoutDashboard, DoorOpen, FileText, History, Wallet, TrendingUp, Package, X } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 
 interface SidebarProps {
   activeMenu: string;
   onMenuClick: (menu: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
 } 
-export const Navbar = ({ activeMenu, onMenuClick }: SidebarProps) => {
-    const [navbarOpen, setNavbarOpen] = useState(false);
+export const Navbar = ({ activeMenu, onMenuClick, isOpen, onClose }: SidebarProps) => {
     const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'kamar', label: 'Manajemen Kamar', icon: DoorOpen },
@@ -17,26 +19,37 @@ export const Navbar = ({ activeMenu, onMenuClick }: SidebarProps) => {
     { id: 'labarugi', label: 'Laporan Laba Rugi', icon: TrendingUp },
     { id: 'inventaris', label: 'Inventaris', icon: Package },
   ];
+
+  const { user } = useAuth();
+
+  const displayName = user?.user_metadata?.full_name || user?.email || 'Admin';
+
+  const handleMenuClick = (menuId: string) => {
+    onMenuClick(menuId);
+    onClose();
+  };
   
   return (
-    <aside className="w-64 bg-white border-r border-border h-screen sticky top-0 flex flex-col">
-      <div className="p-6 border-b border-border">
-        <h1 className="text-xl font-semibold text-primary">Wisma Videra</h1>
-        <p className="text-sm text-muted-foreground mt-1">Management System</p>
+    <>
+    {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+    <aside className={`fixed z-50 lg:sticky w-64 bg-white border-r border-border h-screen top-0 flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <div className="p-6 border-b border-border flex items-center justify-between">
+        <div>
+            <h1 className="text-xl font-semibold text-primary">Wisma Videra</h1>
+            <p className="text-sm text-muted-foreground mt-1">Management System</p>
+        </div>
+        <button
+            onClick={onClose}
+            className="lg:hidden p-2 hover:bg-muted rounded-lg transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
       </div>
-      {/* <div className="navbar-button ">
-                  {" "}
-                  <button onClick={() => setNavbarOpen((prev) => !prev)} aria-label="toggle menu">
-                      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          {navbarOpen ? (
-                              <path d="M6 18 L18 6 M6 6 L18 18" stroke="#000000" strokeWidth="2" strokeLinecap="round" />
-                          ) :
-                              (
-                                  <path d="M4 18 L20 18 M4 12 H16 20 M4 6 H20 " stroke="#000000" strokeWidth="2" strokeLinecap="round" />
-                              )}
-                      </svg>
-                  </button>
-              </div> */}
 
       <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
@@ -46,7 +59,7 @@ export const Navbar = ({ activeMenu, onMenuClick }: SidebarProps) => {
             return (
               <li key={item.id}>
                 <button
-                  onClick={() => onMenuClick(item.id)}
+                  onClick={() => handleMenuClick(item.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-lg transition-colors text-left ${
                     isActive
                       ? 'bg-primary text-primary-foreground'
@@ -69,6 +82,7 @@ export const Navbar = ({ activeMenu, onMenuClick }: SidebarProps) => {
         </div>
       </div>
     </aside>
+    </>
   );
     // const [navbarOpen, setNavbarOpen] = useState(false);
     // return (

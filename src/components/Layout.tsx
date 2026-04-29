@@ -7,9 +7,12 @@ import { RiwayatPembayaran } from "../pages/RiwayatPembayaran";
 import { Invoice } from "../pages/Invoice";
 import { ManajemenKamar } from "../pages/ManajemenKamar";
 import { useState } from "react";
+import Header from "./Header";
+import { LogOut } from "lucide-react";
 
 export const Layout = () => {
     const [activeMenu, setActiveMenu] = useState('dashboard');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const renderContent = () => {
         switch (activeMenu) {
             case 'dashboard':
@@ -30,14 +33,36 @@ export const Layout = () => {
                 return <Dashboard />;
         }
   }
+
+  const handleLogout = () => {
+    // setIsLoggedIn(false);
+    setActiveMenu('dashboard');
+  };
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
     return (
         <>
-        <div className="flex min-h-screen bg-muted/30">
-            <Navbar activeMenu={activeMenu} onMenuClick={setActiveMenu}/>
-            <div className='container mx-auto px-3 py-3 overflow-y-auto ml-5'>
-                <main>
+        <Navbar activeMenu={activeMenu} onMenuClick={setActiveMenu} isOpen={isSidebarOpen} onClose={closeSidebar}/>
+        <div className="flex-1 flex flex-col min-w-0 shrink-0">
+            <div className="logout-dektop top-10 right-10 absolute invisible lg:visible">
+                    <button
+                        // onClick={onLogout}
+                        className="p-2 hover:bg-muted rounded-lg transition-colors outline-3 outline-primary hover:outline-3 hover:outline-red-700"
+                        aria-label="Logout"
+                    >
+                        <LogOut className="w-5 h-5 text-red-800" strokeWidth={2.5} />
+                    </button>
+            </div>
+            <Header onMenuClick={toggleSidebar} />
+            <div className='container flex-1 mx-auto px-3 py-3 overflow-y-auto ml-5'>
+                    {/* <Header onMenuClick={toggleSidebar} onLogout={handleLogout} /> */}
+
                     {renderContent()}
-                </main>
             </div>
         </div>
         </>
