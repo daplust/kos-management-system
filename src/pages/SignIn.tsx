@@ -1,12 +1,16 @@
-import { User, Lock, EyeOff, Eye } from 'lucide-react';
+import { User, Lock, EyeOff, Eye, Loader } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router';
+import { Helmet } from 'react-helmet-async';
 
 export const SignIn = () => {
-    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(''); 
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const {signIn} = useAuth();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -15,15 +19,30 @@ export const SignIn = () => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     }
-    const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
         console.log("submit");
         event.preventDefault();
+        setError('');
         const email = formData.email;
         const password = formData.password;
-        signIn(email, password);
+        setIsLoading(true);
+        const result = await signIn(email, password);
+        setIsLoading(false);
+        if (result.success) {
+            console.log("sign in success");
+            setIsLoggedIn(true);
+            navigate('/');
+        } else {
+            console.log("sign in failed");
+            setError('Login gagal. Silakan periksa email dan password Anda dan coba lagi.');
+        }
     };
 
     return (
+        <>
+        <Helmet>
+            <title>Wisma Videra - Sign In</title>
+        </Helmet>
         <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 w-full">
             <div className="w-full max-w-md">
                 <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10">
@@ -67,10 +86,12 @@ export const SignIn = () => {
                         className="mt-8 w-full bg-primary text-white py-4 rounded-lg text-lg font-semibold hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
                         form='signInForm'
                     >
-                        Masuk
+                        {isLoading ? 
+                        <Loader className="w-5 h-5 animate-spin inline-block" /> : 'Masuk'}
                     </button>
-                </div>
+                </div>  
             </div>
         </div>
+        </>
     );
 }

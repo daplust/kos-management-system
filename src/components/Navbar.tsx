@@ -1,31 +1,31 @@
 import { LayoutDashboard, DoorOpen, FileText, History, Wallet, TrendingUp, Package, X } from 'lucide-react';
-import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router';
 
 
 interface SidebarProps {
   activeMenu: string;
-  onMenuClick: (menu: string) => void;
   isOpen: boolean;
   onClose: () => void;
 } 
-export const Navbar = ({ activeMenu, onMenuClick, isOpen, onClose }: SidebarProps) => {
+export const Navbar = ({ activeMenu, isOpen, onClose }: SidebarProps) => {
+    const navigate = useNavigate();
     const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'kamar', label: 'Manajemen Kamar', icon: DoorOpen },
-    { id: 'invoice', label: 'Invoicing', icon: FileText },
-    { id: 'pembayaran', label: 'Riwayat Pembayaran', icon: History },
-    { id: 'operasional', label: 'Biaya Operasional', icon: Wallet },
-    { id: 'labarugi', label: 'Laporan Laba Rugi', icon: TrendingUp },
-    { id: 'inventaris', label: 'Inventaris', icon: Package },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
+    { id: 'kamar', label: 'Manajemen Kamar', icon: DoorOpen, path: '/kamar' },
+    { id: 'invoice', label: 'Invoicing', icon: FileText, path: '/invoice' },
+    { id: 'pembayaran', label: 'Riwayat Pembayaran', icon: History, path: '/pembayaran' },
+    { id: 'operasional', label: 'Biaya Operasional', icon: Wallet, path: '/operasional' },
+    { id: 'labarugi', label: 'Laporan Laba Rugi', icon: TrendingUp, path: '/labarugi' },
+    { id: 'inventaris', label: 'Inventaris', icon: Package, path: '/inventaris' },
   ];
 
   const { user } = useAuth();
 
-  const displayName = user?.user_metadata?.full_name || user?.email || 'Admin';
+  const displayName =  user?.email || 'Admin';
 
-  const handleMenuClick = (menuId: string) => {
-    onMenuClick(menuId);
+  const handleMenuClick = (path: string) => {
+    navigate(path);
     onClose();
   };
   
@@ -59,7 +59,7 @@ export const Navbar = ({ activeMenu, onMenuClick, isOpen, onClose }: SidebarProp
             return (
               <li key={item.id}>
                 <button
-                  onClick={() => handleMenuClick(item.id)}
+                  onClick={() => handleMenuClick(item.path)}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-lg transition-colors text-left ${
                     isActive
                       ? 'bg-primary text-primary-foreground'
@@ -78,7 +78,7 @@ export const Navbar = ({ activeMenu, onMenuClick, isOpen, onClose }: SidebarProp
       <div className="p-4 border-t border-border">
         <div className="px-4 py-3 bg-muted rounded-lg">
           <p className="text-sm font-medium">Admin</p>
-          <p className="text-xs text-muted-foreground mt-0.5">administrator@wismavidera.com</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{displayName}</p>
         </div>
       </div>
     </aside>

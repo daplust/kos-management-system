@@ -2,10 +2,10 @@ import { Menu, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   onMenuClick: () => void;
-//   onLogout: () => void;
+ onLogout: () => void;
 }
 
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Header({ onMenuClick, onLogout }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-border px-4 lg:px-8 py-4 flex items-center justify-between lg:hidden">
       <button
@@ -21,7 +21,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
       </div>
 
       <button
-        // onClick={onLogout}
+        onClick={onLogout}
         className="p-2 hover:bg-muted rounded-lg transition-colors"
         aria-label="Logout"
       >
