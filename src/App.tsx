@@ -9,6 +9,7 @@ import { BiayaOperasional } from './pages/BiayaOperasional';
 import { LaporanLabaRugi } from './pages/LaporanLabaRugi';
 import { Inventaris } from './pages/Inventaris';
 import { EditKamar } from './pages/ManajemenKamar/EditKamar';
+import { AddKamar } from './pages/ManajemenKamar/AddKamar';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/kamar" element={<ManajemenKamar />} />
+              <Route path="/kamar/add" element={<AddKamar />} />
               <Route path="/kamar/edit/:id" element={<EditKamar />} />
               <Route path="/invoice" element={<Invoice />} />
               <Route path="/pembayaran" element={<RiwayatPembayaran />} />

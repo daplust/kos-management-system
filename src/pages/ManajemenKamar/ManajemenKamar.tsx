@@ -21,7 +21,6 @@ export const ManajemenKamar = () => {
     const { user, loading: authLoading } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFloor, setSelectedFloor] = useState<number | 'all'>('all');
-    const [showAddModal, setShowAddModal] = useState(false);
     const navigate = useNavigate();
 
     console.log(user);
@@ -38,7 +37,8 @@ export const ManajemenKamar = () => {
         return <div>Error: {error.message}</div>;
     }
     const filteredRooms = data?.filter(room => {
-    const matchesSearch = room.room_number === searchTerm ||
+    const matchesSearch = !searchTerm || 
+      room.room_number.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
       (room.tenant && room.tenant.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesFloor = selectedFloor === 'all' || room.floor === selectedFloor;
     return matchesSearch && matchesFloor;
@@ -74,7 +74,7 @@ export const ManajemenKamar = () => {
           <p className="text-muted-foreground text-lg">Kelola data kamar dan penghuni</p>
         </div>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => navigate('/kamar/add')}
           className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-5 h-5" />
@@ -168,10 +168,6 @@ export const ManajemenKamar = () => {
               <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors" onClick={() => handleEdit(room.id)}>
                 <Edit className="w-4 h-4" />
                 <span className="text-sm">Edit</span>
-              </button>
-              <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors">
-                <Trash2 className="w-4 h-4" />
-                <span className="text-sm">Hapus</span>
               </button>
             </div>
           </div>
