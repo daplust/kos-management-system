@@ -7,8 +7,9 @@ import { Loader } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../../components/ui/alert-dialog';
 
-const getOneRoom = async (id: number): Promise<Room> => {
-    const { data, error } = await supabase.from('rooms').select('*').eq('id', id).single();
+const getOneRoom = async (room_number: string): Promise<Room> => {
+    console.log("fetching room", room_number);
+    const { data, error } = await supabase.from('rooms').select('*').eq('room_number', room_number).single();
     if (error) {
         console.error('Error fetching room:', error.message);
         throw new Error(error.message);
@@ -17,9 +18,9 @@ const getOneRoom = async (id: number): Promise<Room> => {
     return data as Room;
 }
 
-const updateRoom = async (id: number, status: string, price: number, tenant: string, phone: string) => {
-    console.log("update room", { id, status, price, tenant, phone });
-    const { data, error } = await supabase.from('rooms').update({ status, price, tenant, phone }).eq('id', id);
+const updateRoom = async (room_number: string, status: string, price: number, tenant: string, phone: string) => {
+    console.log("update room", { room_number, status, price, tenant, phone });
+    const { data, error } = await supabase.from('rooms').update({ status, price, tenant, phone }).eq('room_number', room_number);
     if (error) {
             console.error('Error updating room:', error.message);
             throw new Error(error.message);
@@ -29,17 +30,18 @@ const updateRoom = async (id: number, status: string, price: number, tenant: str
 
 
 export const EditKamar = () => {
-    const { id } = useParams();
+    const { room_number } = useParams();
     const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [showDialog, setShowDialog] = useState(false);
     const [dialogType, setDialogType] = useState<'success' | 'error'>('success');
     const [dialogMessage, setDialogMessage] = useState('');
     const { data, isLoading, error } = useQuery<Room, Error>({
-        queryKey: ['room', id],
-        queryFn: () => getOneRoom(Number(id)),
+        queryKey: ['room', room_number],
+        queryFn: () => getOneRoom(room_number!),
     });
 
+    console.log("room number from params", room_number);
     useEffect(() => {
         if (data) {
             setRoomData({
@@ -65,7 +67,7 @@ export const EditKamar = () => {
     }
     
     const mutationRoom = useMutation({
-        mutationFn: () => updateRoom(Number(id), roomData.status, Number(roomData.price), roomData.tenant, roomData.phone),
+        mutationFn: () => updateRoom(room_number!, roomData.status, Number(roomData.price), roomData.tenant, roomData.phone),
         onSuccess: () => {
             setDialogType('success');
             setDialogMessage('Kamar berhasil diperbarui');
@@ -100,7 +102,7 @@ export const EditKamar = () => {
       <div>
            <div className="mb-8 flex flex-col items-start justify-between gap-4">
               <div>
-                  <h1 className="text-3xl font-semibold mb-2">Edit Kamar Nomor {id} </h1>
+                  <h1 className="text-3xl font-semibold mb-2">Edit Kamar Nomor {room_number} </h1>
                   <p className="text-muted-foreground text-lg">Ubah data kamar atau penghuni</p>
               </div>
           </div>

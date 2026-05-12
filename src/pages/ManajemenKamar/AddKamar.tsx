@@ -35,6 +35,8 @@ export const AddKamar = () => {
         }
     });
     const [roomData, setRoomData] = useState({
+        room_number: '',
+        floor: 0,
         status: 'kosong',
         price: 0,
         tenant: '-',
