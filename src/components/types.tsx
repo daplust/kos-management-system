@@ -1,14 +1,14 @@
 export interface Room {
   id: number;
-  roomNumber: string;
+  room_number: string;
   floor: number;
   status: 'terisi' | 'kosong' | 'maintenance';
   tenant: string | null;
   price: number;
   phone: string | null;
-  paymentStatus: 'lunas' | 'belum bayar' | 'jatuh tempo';
-  lastPaymentDate: Date | null;
-  dueDate: Date | null;
+  payment_status: 'lunas' | 'belum bayar' | 'jatuh tempo';
+  last_payment_date: Date | null;
+  due_date: Date | null;
 }
 
 export interface Item {
