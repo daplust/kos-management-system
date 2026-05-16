@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { supabase } from "../../supabase";
 import { useQuery } from "@tanstack/react-query";
-import { DoorClosed, DoorOpen, Edit, Plus, Search, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, DoorClosed, DoorOpen, Edit, Plus, Search, Trash2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import type { Room } from "../../components/types";
 import { useNavigate } from "react-router";
+import { PaymentModal } from "../../components/PaymentModal";
 
 
 const getRooms = async (): Promise<Room[]> => {
@@ -21,6 +22,10 @@ export const ManajemenKamar = () => {
     const { user, loading } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFloor, setSelectedFloor] = useState<number | 'all'>('all');
+    const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+    const [paymentFilter, setPaymentFilter] = useState<'all' | 'lunas' | 'belum bayar' | 'jatuh tempo'>('all');
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+
     const navigate = useNavigate();
 
     console.log(user);
@@ -32,12 +37,23 @@ export const ManajemenKamar = () => {
     if (error) {
         return <div>Error: {error.message}</div>;
     }
+
+    const openPaymentModal = (room: Room) => {
+      console.log("open payment modal for room", room);
+    setSelectedRoom(room);
+    setShowPaymentModal(true);
+  };
+
+  const handleMarkAsPaid = (paymentData: { method: 'transfer' | 'tunai', note: string, date: string }) => {
+
+  };
     const filteredRooms = data?.filter(room => {
     const matchesSearch = !searchTerm || 
       room.room_number.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
       (room.tenant && room.tenant.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesFloor = selectedFloor === 'all' || room.floor === selectedFloor;
-    return matchesSearch && matchesFloor;
+    const matchesPayment = paymentFilter === 'all' || room.payment_status === paymentFilter;
+    return matchesSearch && matchesFloor && matchesPayment;
   });
 
   const getStatusColor = (status: string) => {
@@ -58,6 +74,35 @@ export const ManajemenKamar = () => {
     }
   };
 
+  const getPaymentStatusColor = (status: string) => {
+    switch (status) {
+      case 'lunas': return 'bg-green-100 text-green-700 border-green-300';
+      case 'belum bayar': return 'bg-red-100 text-red-700 border-red-300';
+      case 'jatuh tempo': return 'bg-orange-100 text-orange-700 border-orange-300';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  const getPaymentStatusIcon = (status: string) => {
+    switch (status) {
+      case 'lunas': return <CheckCircle className="w-4 h-4" />;
+      case 'belum bayar': return <AlertCircle className="w-4 h-4" />;
+      case 'jatuh tempo': return <Clock className="w-4 h-4" />;
+      default: return null;
+    }
+  };
+
+  const getPaymentStatusLabel = (status: string) => {
+    switch (status) {
+      case 'lunas': return 'Lunas';
+      case 'belum bayar': return 'Belum Bayar';
+      case 'jatuh tempo': return 'Jatuh Tempo';
+      default: return status;
+    }
+  };
+
+  const unpaidCount = data?.filter(r => r.payment_status !== 'lunas' && r.status === 'terisi').length;
+  const paidCount = data?.filter(r => r.payment_status === 'lunas' && r.status === 'terisi').length;
   const handleEdit = (room_number: string) => {
     navigate(`/kamar/edit/${room_number}`);
   }
@@ -76,6 +121,42 @@ export const ManajemenKamar = () => {
           <Plus className="w-5 h-5" />
           <span className="text-base">Tambah Kamar</span>
         </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white border-2 border-border rounded-lg p-5">
+          <div className="flex items-center gap-3">
+            <div className="bg-green-100 p-3 rounded-lg">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Sudah Bayar</p>
+              <p className="text-2xl font-bold text-green-600">{paidCount} Kamar</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white border-2 border-border rounded-lg p-5">
+          <div className="flex items-center gap-3">
+            <div className="bg-red-100 p-3 rounded-lg">
+              <AlertCircle className="w-6 h-6 text-red-600" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Belum Bayar</p>
+              <p className="text-2xl font-bold text-red-600">{unpaidCount} Kamar</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white border-2 border-border rounded-lg p-5">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <DoorOpen className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Kamar Terisi</p>
+              <p className="text-2xl font-bold text-blue-600">{data?.filter(r => r.status === 'terisi').length} Kamar</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="bg-white border border-border rounded-lg p-6 mb-6">
@@ -122,6 +203,49 @@ export const ManajemenKamar = () => {
               Lantai 2
             </button>
           </div>
+          <div className="flex gap-2 flex-wrap">
+              <span className="text-sm font-semibold text-muted-foreground self-center mr-2">Status Bayar:</span>
+              <button
+                onClick={() => setPaymentFilter('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  paymentFilter === 'all'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                Semua
+              </button>
+              <button
+                onClick={() => setPaymentFilter('lunas')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  paymentFilter === 'lunas'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                Lunas
+              </button>
+              <button
+                onClick={() => setPaymentFilter('belum bayar')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  paymentFilter === 'belum bayar'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                Belum Bayar
+              </button>
+              <button
+                onClick={() => setPaymentFilter('jatuh tempo')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  paymentFilter === 'jatuh tempo'
+                    ? 'bg-orange-600 text-white'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                Jatuh Tempo
+              </button>
+            </div>
         </div>
       </div>
 
@@ -144,6 +268,18 @@ export const ManajemenKamar = () => {
                 {getStatusLabel(room.status)}
               </span>
             </div>
+            
+            {room.status === 'terisi' && (
+              <div className="mb-4">
+                <div className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 ${getPaymentStatusColor(room.payment_status)}`}>
+                  {getPaymentStatusIcon(room.payment_status)}
+                  <span className="font-semibold text-sm flex-1">{getPaymentStatusLabel(room.payment_status)}</span>
+                </div>
+                {room.last_payment_date && (
+                  <p className="text-xs text-muted-foreground mt-2">Bayar terakhir: {room.last_payment_date.toLocaleDateString('id-ID')}</p>
+                )}
+              </div>
+            )}
 
             <div className="space-y-3 mb-4">
               <div>
@@ -160,6 +296,16 @@ export const ManajemenKamar = () => {
               </div>
             </div>
 
+             {room.status === 'terisi' && room.payment_status !== 'lunas' && (
+              <button
+                onClick={() => openPaymentModal(room)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors mb-3 font-semibold"
+              >
+                <CheckCircle className="w-5 h-5" />
+                <span>Tandai Sudah Bayar</span>
+              </button>
+            )}
+
             <div className="flex gap-2 pt-4 border-t border-border">
               <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors" onClick={() => handleEdit(room.room_number)}>
                 <Edit className="w-4 h-4" />
@@ -169,6 +315,20 @@ export const ManajemenKamar = () => {
           </div>
         ))}
       </div>
+
+      {selectedRoom && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setSelectedRoom(null);
+          }}
+          roomNumber={selectedRoom.room_number}
+          tenantName={selectedRoom.tenant || ''}
+          amount={selectedRoom.price}
+          onSubmit={handleMarkAsPaid}
+        />
+      )}
     </div>
   );
 }

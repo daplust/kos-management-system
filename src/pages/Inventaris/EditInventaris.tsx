@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router';
 import { supabase } from '../../supabase';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { Item, Room } from '../../components/types';
+import type { Item } from '../../components/types';
 import { useAuth } from '../../context/AuthContext';
 import { Loader } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -49,7 +49,7 @@ export const EditItem = () => {
                 quantity: data.quantity,
                 location: data.location,
                 condition: data.condition,
-                purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : new Date(),
+                purchase_date: data.purchase_date ? new Date(data.purchase_date) : new Date(),
                 price: data.price
             });
         }
@@ -61,7 +61,7 @@ export const EditItem = () => {
         quantity: data?.quantity ?? 0,
         location: data?.location ?? '',
         condition: data?.condition ?? '',
-        purchaseDate: data?.purchaseDate ? new Date(data.purchaseDate) : new Date(),
+        purchase_date: data?.purchase_date ? new Date(data.purchase_date) : new Date(),
         price: data?.price ?? 0
     });
     console.log("itemData after", itemData);
@@ -72,7 +72,7 @@ export const EditItem = () => {
     }
     
     const mutationItem = useMutation({
-        mutationFn: () => updateItem(Number(id), itemData.name, itemData.category, Number(itemData.quantity), itemData.location, itemData.condition, new Date(itemData.purchaseDate), Number(itemData.price)),
+        mutationFn: () => updateItem(Number(id), itemData.name, itemData.category, Number(itemData.quantity), itemData.location, itemData.condition, new Date(itemData.purchase_date), Number(itemData.price)),
         onSuccess: () => {
             setDialogType('success');
             setDialogMessage('Item berhasil diperbarui');
@@ -147,8 +147,8 @@ export const EditItem = () => {
                               <input type="text" id="price" name="price" value={itemData.price} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
                           </div>
                           <div>
-                              <label htmlFor="purchaseDate" className="text-base font-semibold block mb-3">Tanggal Pembelian</label>
-                              <input type="date" id="purchaseDate" name="purchaseDate" value={new Date(itemData.purchaseDate).toISOString().split('T')[0]} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                              <label htmlFor="purchase_date" className="text-base font-semibold block mb-3">Tanggal Pembelian</label>
+                              <input type="date" id="purchase_date" name="purchase_date" value={new Date(itemData.purchase_date).toISOString().split('T')[0]} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
                           </div>
                           </div>
                       <button

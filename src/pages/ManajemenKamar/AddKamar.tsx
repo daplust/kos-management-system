@@ -40,7 +40,9 @@ export const AddKamar = () => {
         status: 'kosong',
         price: 0,
         tenant: '-',
-        phone: '-'
+        phone: '-',
+        payment_status: 'belum bayar',
+        due_date: new Date()
     });
     console.log("roomData after", roomData);
     
@@ -101,6 +103,19 @@ export const AddKamar = () => {
                           <div>
                               <label htmlFor="phone" className="text-base font-semibold block mb-3">Nomor Telepon</label>
                               <input type="text" id="phone" name="phone" onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                          </div>
+                          <div>
+                                <label htmlFor="payment_status" className="text-base font-semibold block mb-3">Status Pembayaran</label>
+                                <select id="payment_status" name="payment_status" onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" >
+                                    <option value="" disabled selected hidden>Pilih status pembayaran</option>
+                                    <option value="lunas">Lunas</option>
+                                    <option value="belum bayar">Belum Bayar</option>
+                                    <option value="jatuh tempo">Jatuh Tempo</option>
+                                </select>
+                          </div>
+                          <div>
+                              <label htmlFor="due_date" className="text-base font-semibold block mb-3">Tanggal Jatuh Tempo</label>
+                              <input type="date" id="due_date" name="due_date" onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
                           </div>
                       </div>
                       <button

@@ -53,7 +53,7 @@ export const Inventaris = () => {
     switch (condition) {
       case 'baik': return 'bg-green-100 text-green-700 border-green-200';
       case 'rusak': return 'bg-red-100 text-red-700 border-red-200';
-      case 'perlu_perbaikan': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'perlu perbaikan': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
@@ -62,7 +62,7 @@ export const Inventaris = () => {
     switch (condition) {
       case 'baik': return 'Baik';
       case 'rusak': return 'Rusak';
-      case 'perlu_perbaikan': return 'Perlu Perbaikan';
+      case 'perlu perbaikan': return 'Perlu Perbaikan';
       default: return condition;
     }
   };

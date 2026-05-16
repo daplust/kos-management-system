@@ -40,14 +40,14 @@ export const AddInventaris = () => {
         quantity: 0,
         location: '',
         condition: '',
-        purchaseDate: new Date(),
+        purchase_date: new Date(),
         price: 0
     });
     console.log("itemData after", itemData);
     
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = event.target;
-        if (name === "purchaseDate") {
+        if (name === "purchase_date") {
             setItemData({ ...itemData, [name]: new Date(value) });
         } else {
             setItemData({ ...itemData, [name]: value });
@@ -104,9 +104,9 @@ export const AddInventaris = () => {
                             <label htmlFor="condition" className="text-base font-semibold block mb-3">Kondisi</label>
                             <select id="condition" name="condition" onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" >
                                 <option value="" disabled selected hidden>Pilih kondisi</option>
-                                <option value="Baik">Baik</option>
-                                <option value="Rusak">Rusak</option>
-                                <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                                <option value="baik">Baik</option>
+                                <option value="rusak">Rusak</option>
+                                <option value="perlu perbaikan">Perlu Perbaikan</option>
                             </select>
                           </div>
                           <div>
@@ -114,8 +114,8 @@ export const AddInventaris = () => {
                               <input type="text" id="price" name="price" onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
                           </div>
                           <div>
-                                <label htmlFor="purchaseDate" className="text-base font-semibold block mb-3">Tanggal Pembelian</label>
-                                <input type="date" id="purchaseDate" name="purchaseDate" onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                                <label htmlFor="purchase_date" className="text-base font-semibold block mb-3">Tanggal Pembelian</label>
+                                <input type="date" id="purchase_date" name="purchase_date" onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
                           </div>
                       </div>
                       <button
